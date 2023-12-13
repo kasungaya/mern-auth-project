@@ -1,18 +1,21 @@
 import express from 'express';
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import userRoute from "./routes/user.route.js";
-import authRoute from "./routes/auth.route.js";
+import userRoutes from './routes/user.route.js';
+import authRoutes from './routes/auth.route.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGO).then(() => {
-    console.log("Connected to MongoDB");
-}).catch((err) => {
-    console.log(err);
-});
+mongoose
+    .connect(process.env.MONGO)
+    .then(() => {
+        console.log('Connected to MongoDB');
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
 const __dirname = path.resolve();
 
@@ -22,7 +25,7 @@ app.use(express.static(path.join(__dirname, '/client/dist')));
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
-})
+});
 
 app.use(express.json());
 
@@ -32,14 +35,8 @@ app.listen(3000, () => {
     console.log('Server listening on port 3000');
 });
 
-app.get('/', (req, res) => {
-    res.json({
-        message: 'API is working',
-    });
-});
-
-app.use('/api/user', userRoute);
-app.use('/api/auth', authRoute);
+app.use('/api/user', userRoutes);
+app.use('/api/auth', authRoutes);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
@@ -47,6 +44,6 @@ app.use((err, req, res, next) => {
     return res.status(statusCode).json({
         success: false,
         message,
-        statusCode
+        statusCode,
     });
 });
